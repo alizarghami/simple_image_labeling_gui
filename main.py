@@ -90,7 +90,7 @@ class ImageLabelingForm(object):
             fg="red",
             command=self.reset,
         )
-        self.lbl_cow = tk.Label(master=self.frm_input, text="Cow Number: ")
+        self.lbl_cow = tk.Label(master=self.frm_input, text="Image label: ")
         self.ent_label = tk.Entry(master=self.frm_input, width=6)
         
         self.lbl_cow.grid(row=0, column=0, padx=2, pady=2)
