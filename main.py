@@ -10,7 +10,7 @@ import glob
 import numpy as np
 import pandas as pd
 import tkinter as tk
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageOps
 from tkinter import filedialog
 from pandastable import Table
 
@@ -109,6 +109,8 @@ class ImageLabelingForm(object):
         
         
         #Image
+        self.image_size = (800, 600)
+        
         self.frm_image = tk.Frame(master=self.window, relief=tk.SUNKEN)
         
         self.lbl_folder = tk.Label(master=self.frm_image, text="No folder selected")
@@ -306,7 +308,12 @@ class ImageLabelingForm(object):
         self.ent_label.insert(0, tb_value)        
         
         # Load the image
-        img = ImageTk.PhotoImage(Image.open(self.image_path).resize((960, 540)))
+        image_pil = Image.open(self.image_path)
+        image_pil = ImageOps.exif_transpose(image_pil)
+        image_pil = self.image_fit(image_pil)
+                    
+
+        img = ImageTk.PhotoImage(image_pil)
         self.img_image.configure(image=img)
         self.img_image.image = img
         
@@ -360,4 +367,22 @@ class ImageLabelingForm(object):
         # if (self.current_idx == self.max_idx) and (self.folder_idx == len(self.folder_list)-1):
         #     self.btn_submit["state"] = "disabled"
         # else:
-        #     self.btn_submit["state"] = "active"   
+        #     self.btn_submit["state"] = "active"
+        
+        
+    def image_fit(self, image):
+        image_size = image.size
+        
+        w_ratio = self.image_size[0]/image_size[0]
+        h_ratio = self.image_size[1]/image_size[1]
+        
+        if ((w_ratio < 1) or (h_ratio < 1)):
+            r = min(w_ratio, h_ratio)
+            new_size = (int(image_size[0]*r), int(image_size[1]*r))
+            new_image = image.resize(new_size)
+        else:
+            new_image = image
+            
+        return new_image
+            
+        
